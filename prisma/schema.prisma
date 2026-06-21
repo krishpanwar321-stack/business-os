@@ -1,0 +1,96 @@
+generator client {
+ provider = "prisma-client-js"
+}
+
+datasource db {
+ provider = "postgresql"
+ url      = env("DATABASE_URL")
+}
+
+model User {
+ id String @id @default(cuid())
+
+ name String?
+ email String @unique
+ password String
+
+ businesses Business[]
+
+ createdAt DateTime @default(now())
+}
+
+model Business {
+  id String @id @default(cuid())
+
+  name String
+
+  description String?
+
+  isActive Boolean @default(true)
+
+  userId String
+  user User @relation(fields:[userId], references:[id])
+
+  products Product[]
+  expenses Expense[]
+  sales DailySale[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Product {
+  id String @id @default(cuid())
+
+  name String
+
+  cp Float
+  sp Float
+
+  isActive Boolean @default(true)
+
+  businessId String
+  business Business @relation(fields:[businessId], references:[id])
+
+  sales DailySale[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model DailySale {
+  id String @id @default(cuid())
+
+  date DateTime
+
+  unitsSold Int
+
+  productId String
+  product Product @relation(fields:[productId], references:[id])
+
+  businessId String
+  business Business @relation(fields:[businessId], references:[id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Expense {
+  id String @id @default(cuid())
+
+  title String
+
+  amount Float
+
+  category String
+
+  notes String?
+
+  date DateTime
+
+  businessId String
+  business Business @relation(fields:[businessId], references:[id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
